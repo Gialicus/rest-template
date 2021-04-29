@@ -8,9 +8,22 @@ const example =
 const exampleRes =
     example
         .prop('_id', S.string())
+        .prop('links', S.array().items(
+            S.object()
+                .prop('rel', S.string())
+                .prop('method', S.string())
+                .prop('href', S.string())
+        ))
 
 const exampleArray =
-    S.array().items(exampleRes)
+    S.object()
+        .prop('data', S.array().items(exampleRes))
+        .prop('links', S.array().items(
+            S.object()
+                .prop('rel', S.string())
+                .prop('method', S.string())
+                .prop('href', S.string())
+        ))
 
 
 module.exports = {

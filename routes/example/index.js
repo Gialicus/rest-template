@@ -14,7 +14,11 @@ module.exports = async function (fastify, opts) {
     handler: async function (request, reply) {
       try {
         const result = await fastify.CRUD.getRecords({})
-        return result
+        const linked = new fastify.LinkBuilder('example',result).addCrudLinks().build()
+        return {
+          data: result,
+          links: linked.links
+        }
       } catch (error) {
         return error
       }
@@ -31,8 +35,10 @@ module.exports = async function (fastify, opts) {
     handler: async function (request, reply) {
       try {
         const {id} = request.params
-        const result = await fastify.CRUD.getRecord(id)
-        return result
+        const serviceResult = await fastify.CRUD.getRecord(id)
+        const linked = new fastify.LinkBuilder('example',serviceResult)
+        linked.addCrudLinks()
+        return linked.build()
       } catch (error) {
         return error
       }
@@ -50,7 +56,9 @@ module.exports = async function (fastify, opts) {
     handler: async function (request, reply) {
       try {
         const result = await fastify.CRUD.insertRecord(request.body)
-        return result
+        const linked = new fastify.LinkBuilder('example',result)
+        linked.addCrudLinks()
+        return linked.build()
       } catch (error) {
         return error
       }
@@ -66,7 +74,9 @@ module.exports = async function (fastify, opts) {
       try {
         const {id} = request.params
         const result = await fastify.CRUD.updateRecord(id,request.body)
-        return result
+        const linked = new fastify.LinkBuilder('example', result)
+        linked.addCrudLinks()
+        return linked.build()
       } catch (error) {
         return error
       }
