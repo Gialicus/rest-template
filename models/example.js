@@ -1,9 +1,20 @@
 const S = require('fluent-json-schema')
+const example =
+    S.object()
+        .additionalProperties(false)
+        .prop('name', S.string().required())
+        .prop('type', S.string().required())
 
 const exampleRes =
-    S.object()
+    example
         .prop('_id', S.string())
-        .prop('name', S.string())
-        .prop('type', S.string())
 
-module.exports = exampleRes
+const exampleArray =
+    S.array().items(exampleRes)
+
+
+module.exports = {
+    example,
+    exampleRes,
+    exampleArray
+}
