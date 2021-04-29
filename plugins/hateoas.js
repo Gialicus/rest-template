@@ -7,20 +7,19 @@ module.exports = fp(async function (fastify, opts) {
     const { protocol, host, port } = opts
     const address = `${protocol}://${host}:${port}`
     function LinkBuilder(name, entity) {
-        if(!entity) throw new Error('entity cant be null')
-        let id = entity._id ? entity._id : null
-        if(entity instanceof Array) id = entity.find( element => element._id ? element._id : null)
-        if(id == null) throw new Error('entity or entity child lv1 must have an "_id" property')
-        if(!name) throw new Error('name cant be null')
+        if (!entity) throw new Error('entity cant be null')
+        if (!entity._id) throw new Error('entity  must have an "_id" property')
+        if (!name) throw new Error('name cant be null')
+        const id = entity._id
         this.result = {
             ...entity,
             links: []
         }
         this.addLinks = (link) => {
-            if(!link) throw new Error('link cant be null')
-            if(!link.rel) throw new Error('link.rel cant be null')
-            if(!link.method) throw new Error('link.method cant be null')
-            if(!link.href) throw new Error('link.href cant be null')
+            if (!link) throw new Error('link cant be null')
+            if (!link.rel) throw new Error('link.rel cant be null')
+            if (!link.method) throw new Error('link.method cant be null')
+            if (!link.href) throw new Error('link.href cant be null')
             this.result.links.push(link)
             return this
         }
@@ -29,7 +28,7 @@ module.exports = fp(async function (fastify, opts) {
         }
         this.addCrudLinks = () => {
             this.result.links.push(
-               ...[
+                ...[
                     {
                         rel: 'self',
                         method: 'GET',
@@ -60,7 +59,38 @@ module.exports = fp(async function (fastify, opts) {
             return this
         }
     }
+    function ArrayLinkBuilder(name, list) {
+        if (!list || list.lenght === 0) throw new Error('list cant be null and cant have lenght = 0')
+        if (!name) throw new Error('name cant be null')
+        this.result = {
+            data: list,
+            links: []
+        }
+        this.addLinks = (link) => {
+            if (!link) throw new Error('link cant be null')
+            if (!link.rel) throw new Error('link.rel cant be null')
+            if (!link.method) throw new Error('link.method cant be null')
+            if (!link.href) throw new Error('link.href cant be null')
+            this.result.links.push(link)
+            return this
+        }
+        this.build = () => {
+            return this.result
+        }
+        this.addSelfLinks = () => {
+            const mappedIds = list.map(elem => elem._id ? elem._id : null).filter(e => e !== null)
+            mappedIds.forEach(id => {
+                this.result.links.push({
+                    rel: 'self',
+                    method: 'GET',
+                    href: `${address}/${name}/${id}`
+                })
+            });
+            return this
+        }
+    }
     fastify.decorate('LinkBuilder', LinkBuilder)
+    fastify.decorate('ArrayLinkBuilder', ArrayLinkBuilder)
 })
 
 

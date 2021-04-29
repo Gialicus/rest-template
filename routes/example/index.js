@@ -14,11 +14,8 @@ module.exports = async function (fastify, opts) {
     handler: async function (request, reply) {
       try {
         const result = await fastify.CRUD.getRecords({})
-        const linked = new fastify.LinkBuilder('example',result).addCrudLinks().build()
-        return {
-          data: result,
-          links: linked.links
-        }
+        const linked = new fastify.ArrayLinkBuilder('example',result).addSelfLinks().build()
+        return linked
       } catch (error) {
         return error
       }
