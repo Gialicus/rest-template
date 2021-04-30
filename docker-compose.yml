@@ -1,0 +1,26 @@
+version: '3.4'
+
+services:
+  example:
+    container_name: example
+    restart: "always"
+    depends_on: 
+      - mongodb
+      - cache
+    build:
+      context: .
+    ports: 
+      - 3000:3000
+
+  cache:
+    image: "redis:alpine"
+    container_name: cache
+    command: --port 6380
+    ports:
+     - "6380:6380"
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    command: mongod --port 27018
+

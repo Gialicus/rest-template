@@ -34,6 +34,10 @@ module.exports = async function (fastify, opts) {
         const {id} = request.params
         const serviceResult = await fastify.CRUD.getRecord(id)
         const linked = new fastify.LinkBuilder('example',serviceResult)
+        fastify.redis.set('key', 'VALUE')
+        fastify.redis.get('key', (err,data) => {
+          console.log(data)
+        })
         linked.addCrudLinks()
         return linked.build()
       } catch (error) {
