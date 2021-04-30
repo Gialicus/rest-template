@@ -4,9 +4,8 @@ const fp = require('fastify-plugin')
 
 
 module.exports = fp(async function (fastify, opts) {
-    const { protocol, host, port } = opts
-    const address = `${protocol}://${host}:${port}`
-    function LinkBuilder(name, entity) {
+    const { address, name } = opts
+    function LinkBuilder(entity) {
         if (!entity) throw new Error('entity cant be null')
         if (!entity._id) throw new Error('entity  must have an "_id" property')
         if (!name) throw new Error('name cant be null')
@@ -59,7 +58,7 @@ module.exports = fp(async function (fastify, opts) {
             return this
         }
     }
-    function ArrayLinkBuilder(name, list) {
+    function ArrayLinkBuilder(list) {
         if (!list || list.lenght === 0) throw new Error('list cant be null and cant have lenght = 0')
         if (!name) throw new Error('name cant be null')
         this.result = {
@@ -81,7 +80,7 @@ module.exports = fp(async function (fastify, opts) {
             const mappedIds = list.map(elem => elem._id ? elem._id : null).filter(e => e !== null)
             mappedIds.forEach(id => {
                 this.result.links.push({
-                    rel: 'self',
+                    rel: `${id}`,
                     method: 'GET',
                     href: `${address}/${name}/${id}`
                 })
@@ -95,9 +94,8 @@ module.exports = fp(async function (fastify, opts) {
 
 
 module.exports.autoConfig = {
-    protocol: 'http',
-    host: 'localhost',
-    port: 3000
+    address: 'http://localhost:3000',
+    name: 'example'
 }
 module.exports.autoPrefix = 'hateoas'
 

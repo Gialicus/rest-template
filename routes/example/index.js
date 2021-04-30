@@ -13,8 +13,21 @@ module.exports = async function (fastify, opts) {
     },
     handler: async function (request, reply) {
       try {
-        const result = await fastify.CRUD.getRecords({})
-        const linked = new fastify.ArrayLinkBuilder('example',result).addSelfLinks().build()
+        const { page } = request.query
+        const result = await fastify.CRUD.getRecords(page)
+        const linked = new fastify.ArrayLinkBuilder(result)
+          .addSelfLinks()
+          .addLinks({
+            rel: 'nextPage', 
+            method: 'GET', 
+            href: `http://localhost:3000/example?page=${(page && parseInt(page) > 1) ? parseInt(page) + 1 : 2}`
+          })
+          .addLinks({
+            rel: 'prevPage', 
+            method: 'GET', 
+            href: `http://localhost:3000/example?page=${(page && parseInt(page) > 1) ? parseInt(page) - 1 : 1}`
+          })
+          .build()
         return linked
       } catch (error) {
         return error
@@ -29,20 +42,20 @@ module.exports = async function (fastify, opts) {
         200: MonoRes
       }
     },
-    onRequest: async function (request,reply) {
-        const {id} = request.params
-        const cached = await fastify.getCache(id)
-        if(cached) {
-         reply.send(JSON.parse(cached))
-        }
+    onRequest: async function (request, reply) {
+      const { id } = request.params
+      const cached = await fastify.getCache(id)
+      if (cached) {
+        reply.send(JSON.parse(cached))
+      }
     },
     handler: async function (request, reply) {
       try {
-        const {id} = request.params
+        const { id } = request.params
         const serviceResult = await fastify.CRUD.getRecord(id)
-        const linked = new fastify.LinkBuilder('example',serviceResult)
+        const linked = new fastify.LinkBuilder(serviceResult)
         const result = linked.addCrudLinks().build()
-        fastify.setCache(id,JSON.stringify(result))
+        fastify.setCache(id, JSON.stringify(result))
         return result
       } catch (error) {
         return error
@@ -61,7 +74,7 @@ module.exports = async function (fastify, opts) {
     handler: async function (request, reply) {
       try {
         const result = await fastify.CRUD.insertRecord(request.body)
-        const linked = new fastify.LinkBuilder('example',result)
+        const linked = new fastify.LinkBuilder(result)
         linked.addCrudLinks()
         return linked.build()
       } catch (error) {
@@ -77,9 +90,9 @@ module.exports = async function (fastify, opts) {
     },
     handler: async function (request, reply) {
       try {
-        const {id} = request.params
-        const result = await fastify.CRUD.updateRecord(id,request.body)
-        const linked = new fastify.LinkBuilder('example', result)
+        const { id } = request.params
+        const result = await fastify.CRUD.updateRecord(id, request.body)
+        const linked = new fastify.LinkBuilder(result)
         linked.addCrudLinks()
         return linked.build()
       } catch (error) {
@@ -92,7 +105,7 @@ module.exports = async function (fastify, opts) {
     url: '/:id',
     handler: async function (request, reply) {
       try {
-        const {id} = request.params
+        const { id } = request.params
         const result = await fastify.CRUD.deleteRecord(id)
         return result
       } catch (error) {
