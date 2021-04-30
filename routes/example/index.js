@@ -1,6 +1,6 @@
 'use strict'
 
-const { exampleRes, example, exampleArray } = require('../../models/example.js')
+const { MonoRes, example, ArrayRes } = require('../../models/example.js')
 
 module.exports = async function (fastify, opts) {
   fastify.route({
@@ -8,7 +8,7 @@ module.exports = async function (fastify, opts) {
     url: '/',
     schema: {
       response: {
-        200: exampleArray
+        200: ArrayRes
       }
     },
     handler: async function (request, reply) {
@@ -26,7 +26,7 @@ module.exports = async function (fastify, opts) {
     url: '/:id',
     schema: {
       response: {
-        200: exampleRes
+        200: MonoRes
       }
     },
     handler: async function (request, reply) {
@@ -47,7 +47,7 @@ module.exports = async function (fastify, opts) {
     schema: {
       body: example,
       response: {
-        200: exampleRes
+        200: MonoRes
       }
     },
     handler: async function (request, reply) {
@@ -65,7 +65,7 @@ module.exports = async function (fastify, opts) {
     method: 'PUT',
     url: '/:id',
     response: {
-      200: exampleRes
+      200: MonoRes
     },
     handler: async function (request, reply) {
       try {

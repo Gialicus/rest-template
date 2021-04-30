@@ -1,33 +1,27 @@
 const S = require('fluent-json-schema')
+const linkSchema = require('./links')
 const example =
     S.object()
         .additionalProperties(false)
         .prop('name', S.string().required())
         .prop('type', S.string().required())
 
-const exampleRes =
+const Mono =
     example
         .prop('_id', S.string())
-        .prop('links', S.array().items(
-            S.object()
-                .prop('rel', S.string())
-                .prop('method', S.string())
-                .prop('href', S.string())
-        ))
 
-const exampleArray =
+const MonoRes =
+    Mono
+        .prop('links', S.array().items(linkSchema))
+
+const ArrayRes =
     S.object()
-        .prop('data', S.array().items(exampleRes))
-        .prop('links', S.array().items(
-            S.object()
-                .prop('rel', S.string())
-                .prop('method', S.string())
-                .prop('href', S.string())
-        ))
+        .prop('data', S.array().items(Mono))
+        .prop('links', S.array().items(linkSchema))
 
 
 module.exports = {
     example,
-    exampleRes,
-    exampleArray
+    MonoRes,
+    ArrayRes
 }

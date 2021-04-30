@@ -56,12 +56,12 @@ async function crud(fastify, opts) {
 
     async function getRecords(filter) {
         const { db } = fastify.mongo
-        const { schema } = opts
+        const { schema, maxResults } = opts
         return new Promise((resolve, reject) => {
             db.collection(schema, onCollection)
             function onCollection(err, col) {
                 if (err) return reject(err)
-                col.find(filter).toArray((err, data) => {
+                col.find(filter).limit(maxResults).toArray((err, data) => {
                     if (err) reject(err)
                     resolve(data)
                 })
@@ -119,5 +119,5 @@ async function crud(fastify, opts) {
     })
 }
 module.exports = fp(crud)
-module.exports.autoConfig = { schema: 'example' }
+module.exports.autoConfig = { schema: 'example', maxResults: 20 }
 module.exports.autoPrefix = 'crud'
