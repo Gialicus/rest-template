@@ -29,17 +29,21 @@ module.exports = async function (fastify, opts) {
         200: MonoRes
       }
     },
+    onRequest: async function (request,reply) {
+        const {id} = request.params
+        const cached = await fastify.getCache(id)
+        if(cached) {
+         reply.send(JSON.parse(cached))
+        }
+    },
     handler: async function (request, reply) {
       try {
         const {id} = request.params
         const serviceResult = await fastify.CRUD.getRecord(id)
         const linked = new fastify.LinkBuilder('example',serviceResult)
-        fastify.redis.set('key', 'VALUE')
-        fastify.redis.get('key', (err,data) => {
-          console.log(data)
-        })
-        linked.addCrudLinks()
-        return linked.build()
+        const result = linked.addCrudLinks().build()
+        fastify.setCache(id,JSON.stringify(result))
+        return result
       } catch (error) {
         return error
       }
