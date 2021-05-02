@@ -94,8 +94,8 @@ module.exports = fp(async function (fastify, opts) {
 
 
 module.exports.autoConfig = {
-    address: 'http://localhost:3000',
-    name: 'example'
+    address: process.env.HAL_ADDRESS,
+    name: process.env.HAL_ENTITY
 }
 module.exports.autoPrefix = 'hateoas'
 

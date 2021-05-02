@@ -11,6 +11,8 @@ module.exports = async function (fastify, opts) {
       .prop('DB_URL', S.string().required())
       .prop('CACHE_HOST', S.string().required())
       .prop('CACHE_PORT', S.integer().required())
+      .prop('HAL_ADDRESS', S.string().required())
+      .prop('HAL_ENTITY', S.integer().required())
       .valueOf()
   })
   fastify.register(AutoLoad, {

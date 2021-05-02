@@ -20,12 +20,12 @@ module.exports = async function (fastify, opts) {
           .addLinks({
             rel: 'nextPage', 
             method: 'GET', 
-            href: `http://localhost:3000/example?page=${(page && parseInt(page) > 1) ? parseInt(page) + 1 : 2}`
+            href: `${process.env.HAL_ADDRESS}/${process.env.HAL_ENTITY}?page=${(page && parseInt(page) > 1) ? parseInt(page) + 1 : 2}`
           })
           .addLinks({
             rel: 'prevPage', 
             method: 'GET', 
-            href: `http://localhost:3000/example?page=${(page && parseInt(page) > 1) ? parseInt(page) - 1 : 1}`
+            href: `${process.env.HAL_ADDRESS}/${process.env.HAL_ENTITY}?page=${(page && parseInt(page) > 1) ? parseInt(page) - 1 : 1}`
           })
           .build()
         return linked
