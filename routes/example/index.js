@@ -1,6 +1,6 @@
 'use strict'
 
-const { MonoRes, example, ArrayRes } = require('../../models/example.js')
+const { entity, EntityWithLinks, ArrayWhitLinks } = require('../../models/entity.js')
 
 module.exports = async function (fastify, opts) {
   fastify.route({
@@ -8,7 +8,7 @@ module.exports = async function (fastify, opts) {
     url: '/',
     schema: {
       response: {
-        200: ArrayRes
+        200: ArrayWhitLinks
       }
     },
     handler: async function (request, reply) {
@@ -39,7 +39,7 @@ module.exports = async function (fastify, opts) {
     url: '/:id',
     schema: {
       response: {
-        200: MonoRes
+        200: EntityWithLinks
       }
     },
     onRequest: async function (request, reply) {
@@ -66,9 +66,9 @@ module.exports = async function (fastify, opts) {
     method: 'POST',
     url: '/',
     schema: {
-      body: example,
+      body: entity,
       response: {
-        200: MonoRes
+        200: EntityWithLinks
       }
     },
     handler: async function (request, reply) {
@@ -86,7 +86,7 @@ module.exports = async function (fastify, opts) {
     method: 'PUT',
     url: '/:id',
     response: {
-      200: MonoRes
+      200: EntityWithLinks
     },
     handler: async function (request, reply) {
       try {
