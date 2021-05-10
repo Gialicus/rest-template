@@ -44,7 +44,7 @@ async function crud(fastify, opts) {
         return new Promise((resolve, reject) => {
             db.collection(schema, onCollection)
             function onCollection(err, col) {
-                const filterQuery = { _id: new ObjectId(id)}
+                const filterQuery = { _id: new ObjectId(id) }
                 if (err) return reject(err)
                 col.findOne(filterQuery, (err, data) => {
                     if (err) reject(err)
@@ -54,37 +54,39 @@ async function crud(fastify, opts) {
         })
     }
 
-    async function getRecords(filter) {
+    async function getRecords(page = 0) {
         const { db } = fastify.mongo
         const { schema, maxResults } = opts
         return new Promise((resolve, reject) => {
             db.collection(schema, onCollection)
             function onCollection(err, col) {
                 if (err) return reject(err)
-                col.find(filter).limit(maxResults).toArray((err, data) => {
-                    if (err) reject(err)
-                    resolve(data)
-                })
+                col.find()
+                    .skip(page > 0 ? ( ( page - 1 ) * maxResults ) : 0 )
+                    .limit(maxResults).toArray((err, data) => {
+                        if (err) reject(err)
+                        resolve(data)
+                    })
             }
         })
     }
 
     async function updateRecord(id, objToUpdate) {
-        const { db,ObjectId } = fastify.mongo
+        const { db, ObjectId } = fastify.mongo
         const { schema } = opts
         return new Promise((resolve, reject) => {
             db.collection(schema, onCollection)
             function onCollection(err, col) {
-                const filterQuery = { _id: new ObjectId(id)}
+                const filterQuery = { _id: new ObjectId(id) }
                 if (err) return reject(err)
                 col.findOne(filterQuery, (err, data) => {
                     if (err) reject(err)
-                    if(!data) reject(new Error('element not found'))
+                    if (!data) reject(new Error('element not found'))
                     const updated = {
                         ...data,
                         ...objToUpdate
                     }
-                    col.updateOne(filterQuery, { $set: updated }, (err,result) => {
+                    col.updateOne(filterQuery, { $set: updated }, (err, result) => {
                         if (err) reject(err)
                         resolve(updated)
                     })
@@ -99,7 +101,7 @@ async function crud(fastify, opts) {
         return new Promise((resolve, reject) => {
             db.collection(schema, onCollection)
             function onCollection(err, col) {
-                const filterQuery = { _id: new ObjectId(id)}
+                const filterQuery = { _id: new ObjectId(id) }
                 if (err) return reject(err)
                 col.deleteOne(filterQuery, (err, data) => {
                     if (err) reject(err)
@@ -119,5 +121,5 @@ async function crud(fastify, opts) {
     })
 }
 module.exports = fp(crud)
-module.exports.autoConfig = { schema: 'example', maxResults: 20 }
+module.exports.autoConfig = { schema: 'example', maxResults: 25 }
 module.exports.autoPrefix = 'crud'
