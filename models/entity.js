@@ -16,7 +16,7 @@ const EntityWithLinks =
 
 const ArrayWhitLinks =
     S.object()
-        .prop('data', S.array().items(Mono))
+        .prop('data', S.array().items(EntityWithId))
         .prop('links', S.array().items(linkSchema))
 
 
